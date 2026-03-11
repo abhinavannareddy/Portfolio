@@ -9,22 +9,36 @@ const About = () => {
   const aboutSectionRef = useRef(null);
 
   useEffect(() => {
-    gsap.fromTo(aboutSectionRef.current, 
+    const isMobile = window.innerWidth <= 1025;
+
+    if (isMobile) {
+      // On mobile, skip the scroll animation and make section visible immediately
+      if (aboutSectionRef.current) {
+        gsap.set(aboutSectionRef.current, { y: 0, opacity: 1 });
+      }
+      return;
+    }
+
+    const anim = gsap.fromTo(aboutSectionRef.current, 
       { 
-        y: 100, // Initial position (e.g., starting from below)
+        y: 100,
         opacity: 0 
       },
       {
-        y: -20, // Final position (reduced upward translation)
+        y: -20,
         opacity: 1,
         scrollTrigger: {
           trigger: aboutSectionRef.current,
-          start: "top bottom", // When the top of the trigger hits the bottom of the viewport
-          end: "bottom center", // When the bottom of the trigger hits the center of the viewport
-          scrub: true, // Smoothly animate based on scroll position
+          start: "top bottom",
+          end: "bottom center",
+          scrub: true,
         },
       }
     );
+
+    return () => {
+      anim.kill();
+    };
   }, []);
 
   return (
